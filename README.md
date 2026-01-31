@@ -57,4 +57,13 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
 # CST14_PaoPals
+
+# WHAT TO DO AFTER CLONING?
+Run composer install
+Run npm install
+Run cp .env.example .env
+Run php artisan key:generate
+
+
