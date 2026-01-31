@@ -39,8 +39,8 @@
                 </a>
             </h2>
 
-            <form method="POST" action=""
-                  class="flex flex-col items-center justify-center gap-1">
+            <form method="POST" action="/register"
+                  class="flex flex-col items-center justify-center gap-1" novalidate>
                 @csrf
 
                 <label class="self-start font-medium text-lg mt-2">
@@ -48,18 +48,27 @@
                 </label>
                 <input type="text" name="firstName" value="{{ old('firstName') }}" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('firstName')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
                 <label class="self-start font-medium text-lg mt-2">
                     Last Name
                 </label>
                 <input type="text" name="lastName" value="{{ old('lastName') }}" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('lastName')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
                 <label class="self-start font-medium text-lg mt-2">
                     Email Address
                 </label>
                 <input type="email" name="email" value="{{ old('email') }}" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('email')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
                 <label class="self-start font-medium text-lg mt-2">
                     Contact Number
@@ -67,18 +76,27 @@
                 <input type="text" inputmode="numeric" name="contactNumber"
                        value="{{ old('contactNumber') }}" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('contactNumber')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror 
 
                 <label class="self-start font-medium text-lg mt-2">
                     Address
                 </label>
                 <input type="text" name="address" value="{{ old('address') }}" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('address')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
                 <label class="self-start font-medium text-lg mt-2">
                     Password <small class="text-sm font-normal">( min 8 characters )</small>
                 </label>
                 <input type="password" name="password" required
                        class="w-[500px] border border-black rounded-md px-2 py-1">
+                @error('password')
+                    <p class="self-start ml-2 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
                 <button type="submit"
                         class="h-[57px] bg-[#CE5959] text-white w-[513px] py-4 mt-5 text-lg font-lg rounded-full hover:bg-[#ff5858] transition">

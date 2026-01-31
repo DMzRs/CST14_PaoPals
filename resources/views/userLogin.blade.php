@@ -35,43 +35,44 @@
         </div>
 
         <!-- Login Form -->
-        <div class="w-[700px] h-[330px] bg-[#FEFAF8] border border-black rounded-2xl px-8 pt-6 pb-14 mt-5">
-            <form method="POST" class="flex flex-col items-center">
+       <div class="w-[700px] bg-[#FEFAF8] border border-black rounded-2xl px-8 pt-6 pb-6 mt-5">
+            <form method="POST" action="/login" class="flex flex-col items-center" novalidate>
                 @csrf
 
-                <label class="self-start ml-32 mt-5 text-[20px] font-medium">
-                    Email
-                </label>
-                <input type="email"
-                       name="username"
-                       required
-                       class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[length:24px_24px] bg-[position:7px_center]"
-                       style="background-image: url('{{ asset('images/icons/email_icon.png') }}');">
+                <!-- Email -->
+                <label class="self-start ml-[110px] mt-5 text-[20px] font-medium">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}"
+                    class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[length:24px_24px] bg-[position:7px_center]"
+                    style="background-image: url('{{ asset('images/icons/email_icon.png') }}');">
+                @error('email')
+                    <p class="self-start ml-32 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
-                <label class="self-start ml-32 mt-5 text-[20px] font-medium">
-                    Password
-                </label>
-                <input type="password"
-                       name="password"
-                       required
-                       class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[position:11px_center]"
-                       style="background-image: url('{{ asset('images/icons/password_icon.png') }}');">
+                <!-- Password -->
+                <label class="self-start ml-[110px] mt-5 text-[20px] font-medium">Password</label>
+                <input type="password" name="password"
+                    class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[position:11px_center]" 
+                    style="background-image: url('{{ asset('images/icons/password_icon.png') }}');">
+                @error('password')
+                    <p class="self-start ml-32 mt-1 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
 
-                <!-- Buttons -->
+                <!-- Show Password Checkbox -->
                 <div class="flex justify-between items-center w-[410px] ml-5 mt-4">
                     <div class="flex items-center gap-1">
                         <input type="checkbox" id="showPassword">
-                        <label for="showPassword" class="text-xs">
-                            Show Password
-                        </label>
+                        <label for="showPassword" class="text-xs">Show Password</label>
                     </div>
                 </div>
+
+                <!-- Sign In Button -->
                 <button name="signIn"
-                            class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white font-medium text-base px-10 py-2 rounded-full transition mt-3">
-                        Sign In
+                        class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white font-medium text-base px-10 py-2 rounded-full transition mb-0 mt-3">
+                    Sign In
                 </button>
             </form>
         </div>
+
 
         <!-- Create Account -->
         <div class="w-[700px] h-[150px] mt-6 bg-[#F1B9B2] border border-black rounded-2xl
