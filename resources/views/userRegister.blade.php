@@ -34,12 +34,12 @@
 
             <h2 class="text-sm font-normal self-start mb-3">
                 Already have an account?
-                <a href="/login" class="text-[#CE5959] hover:underline">
+                <a href="{{ route('login') }}" class="text-[#CE5959] hover:underline">
                     Sign in
                 </a>
             </h2>
 
-            <form method="POST" action="/register"
+            <form method="POST" action="{{ route('register') }}"
                   class="flex flex-col items-center justify-center gap-1" novalidate>
                 @csrf
 

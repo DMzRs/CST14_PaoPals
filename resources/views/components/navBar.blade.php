@@ -27,17 +27,17 @@
             <div class="">
                 <ul class="flex items-center justify-evenly">
                     <li class="px-5 list-none">
-                        <a href="/" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="{{ route('frontPage') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Home
                         </a>
                     </li>
                     <li class="px-5 list-none">
-                        <a href="/menu" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="{{ route('menu') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Menu
                         </a>
                     </li>
                     <li class="px-5 list-none">
-                        <a href="/contact" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="{{ route('contact') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Contact Us
                         </a>
                     </li>
@@ -45,19 +45,41 @@
             </div>
 
             <!-- Action Icons -->
-            <div class="mr-[100px] flex items-center justify-evenly">
-                <a href="/login">
-                    <img src="{{ asset('images/icons/username_icon.png') }}"
-                         class="mx-5 cursor-pointer"
-                         alt="profile">
-                </a>
-                <a href="/cart">
-                    <img src="{{ asset('images/icons/cart_icon.png') }}"
-                         class="mx-5 cursor-pointer"
-                         alt="cart">
-                </a>
-            </div>
-
+                <div class="mr-[100px] flex items-center justify-evenly">
+                    @if(Auth::check())
+                        <!-- If user is logged in -->
+                        <a href="{{ route('profile') }}">
+                            <img src="{{ asset('images/icons/username_icon.png') }}"
+                                class="mx-5 cursor-pointer"
+                                alt="profile">
+                        </a>
+                        <a href="{{ route('cart') }}">
+                        <img src="{{ asset('images/icons/cart_icon.png') }}"
+                            class="mx-5 cursor-pointer"
+                            alt="cart">
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit">
+                                <img src="{{ asset('images/icons/logout_icon.png') }}"
+                                    class="mt-[5px] mx-5 cursor-pointer"
+                                    alt="logout">
+                            </button>
+                        </form>
+                    @else
+                        <!-- If user is not logged in -->
+                        <a href="{{ route('login') }}">
+                            <img src="{{ asset('images/icons/username_icon.png') }}"
+                                class="mx-5 cursor-pointer"
+                                alt="profile">
+                        </a>
+                        <a href="{{ route('login') }}">
+                        <img src="{{ asset('images/icons/cart_icon.png') }}"
+                            class="mx-5 cursor-pointer"
+                            alt="cart">
+                        </a>
+                    @endif
+                </div>
         </div>
 
         <!-- Bottom Accent Bar -->

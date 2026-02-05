@@ -36,7 +36,7 @@
 
         <!-- Login Form -->
        <div class="w-[700px] bg-[#FEFAF8] border border-black rounded-2xl px-8 pt-6 pb-6 mt-5">
-            <form method="POST" action="/login" class="flex flex-col items-center" novalidate>
+            <form method="POST" action="{{ route('login') }}" class="flex flex-col items-center" novalidate>
                 @csrf
 
                 <!-- Email -->
@@ -50,7 +50,7 @@
 
                 <!-- Password -->
                 <label class="self-start ml-[110px] mt-5 text-[20px] font-medium">Password</label>
-                <input type="password" name="password"
+                <input type="password" id="password" name="password"
                     class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[position:11px_center]" 
                     style="background-image: url('{{ asset('images/icons/password_icon.png') }}');">
                 @error('password')
@@ -65,8 +65,21 @@
                     </div>
                 </div>
 
+                <!-- Password visibility -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const passwordInput = document.getElementById('password');
+                        const showPasswordCheckbox = document.getElementById('showPassword');
+
+                        showPasswordCheckbox.addEventListener('change', function() {
+                            passwordInput.type = this.checked ? 'text' : 'password';
+                        });
+                    });
+                </script>
+
+
                 <!-- Sign In Button -->
-                <button name="signIn"
+                <button type="submit"
                         class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white font-medium text-base px-10 py-2 rounded-full transition mb-0 mt-3">
                     Sign In
                 </button>
@@ -80,7 +93,7 @@
             <h1 class="text-2xl font-semibold">
                 Want to create an account?
             </h1>
-            <button onclick="location.href='/register'"
+            <button onclick="location.href='{{ route('register') }}'"
                     class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white
                             font-medium px-5 py-1 rounded-3xl transition text-base">
                 Create an Account

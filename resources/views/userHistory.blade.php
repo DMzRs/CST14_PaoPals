@@ -7,7 +7,7 @@
             <h1 class="text-[#CE5959] text-[30px] font-semibold">
                 YOUR ACCOUNT
             </h1>
-            <h2 class="text-[#CE5959] text-[18px] font-medium mt-1 ml-[15px]">
+            <h2 class="text-[#CE5959] text-[18px] font-medium mt-1 ml-[10px]">
                 Order History
             </h2>
         </div>
@@ -31,7 +31,7 @@
             <!-- History Container -->
             <div class="ml-[50px] w-[1200px] px-5 py-10 border border-gray-300 rounded-2xl flex flex-col items-center">
 
-                <h3 class="self-start ml-3 text-[#CE5959] text-xl font-semibold">
+                <h3 class="self-start ml-40 text-[#CE5959] text-xl font-semibold">
                     Your Past Orders
                 </h3>
 

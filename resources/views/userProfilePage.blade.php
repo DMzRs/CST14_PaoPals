@@ -31,7 +31,7 @@
             <!-- Profile Info -->
             <div class="ml-[50px] w-[1000px] px-5 py-10 border border-gray-300 rounded-2xl flex flex-col items-center">
 
-                <h3 class="self-start text-[#CE5959] text-xl font-semibold">
+                <h3 class="self-start text-[#CE5959] text-xl font-semibold ml-4">
                     Your information
                 </h3>
 
@@ -44,8 +44,11 @@
                             First Name
                         </label>
                         <input type="text" name="firstName"
-                               value="{{ old('firstName', $customer->customerFirstName ?? '') }}"
+                               value="{{ old('firstName', $user->firstName ?? '') }}"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('firstName')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="flex flex-col w-[40%]">
@@ -53,8 +56,12 @@
                             Last Name
                         </label>
                         <input type="text" name="lastName"
-                               value="{{ old('lastName', $customer->customerLastName ?? '') }}"
+                               value="{{ old('lastName', $user->lastName ?? '') }}"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('lastName')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+
                     </div>
 
                     <div class="flex flex-col w-[40%]">
@@ -62,8 +69,11 @@
                             Email
                         </label>
                         <input type="email" name="email"
-                               value="{{ old('email', $customer->customerEmail ?? '') }}"
+                               value="{{ old('email', $user->email ?? '') }}"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('email')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="flex flex-col w-[40%]">
@@ -71,8 +81,11 @@
                             Contact Number
                         </label>
                         <input type="text" inputmode="numeric" name="contactNumber"
-                               value="{{ old('contactNumber', $customer->customerContactNumber ?? '') }}"
+                               value="{{ old('contactNumber', $user->contactNumber ?? '') }}"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('contactNumber')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="flex flex-col w-full">
@@ -80,8 +93,11 @@
                             Address
                         </label>
                         <input type="text" name="address"
-                               value="{{ old('address', $customer->customerAddress ?? '') }}"
-                               class="border-b border-black px-2 w-[850px] focus:outline-none">
+                               value="{{ old('address', $user->address ?? '') }}"
+                               class="border-b border-black px-2 w-[900px] focus:outline-none">
+                        @error('address')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="flex flex-col w-[40%]">
@@ -90,6 +106,9 @@
                         </label>
                         <input type="password" name="currentPassword"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('currentPassword')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="flex flex-col w-[40%]">
@@ -98,15 +117,25 @@
                         </label>
                         <input type="password" name="newPassword"
                                class="border-b border-black px-2 focus:outline-none">
+                        @error('newPassword')
+                            <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                        @enderror
                     </div>
+
+                    @if(session('success'))
+                        <div class="w-full bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mt-4">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
                     <div class="w-full flex justify-center mt-5">
                         <button type="submit"
-                                class="w-[200px] py-1 rounded-full bg-[#CE5959] text-white text-lg font-semibold hover:bg-[#ff5858] transition">
+                                class="w-[200px] py-1 rounded-full bg-[#CE5959] text-white text-lg font-semibold hover:bg-[#ff5858] mt-5 transition">
                             Save
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </section>

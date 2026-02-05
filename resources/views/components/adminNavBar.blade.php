@@ -13,17 +13,19 @@
         <div class="flex items-center justify-between py-2 bg-[#A54646]">
 
             <div class="ml-[200px]">
-                <img src="{{ asset('images/Logo/PaoPals_logo.png') }}">
+                <img src="{{ asset('images/logo/PaoPals_logo.png') }}">
             </div>
 
             <div class="mr-[100px]">
-                <button
-                    onclick="location.href='/'"
-                    class="w-[200px] px-5 py-4 text-[20px] font-bold text-white bg-[#A35C5C] rounded-[10px]
-                           shadow-[0px_3px_5px_1px_rgba(13,14,15,0.322)]
-                           hover:bg-[#ff5858] cursor-pointer">
-                    Logout
-                </button>
+                <form action="{{ route('adminLogout') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                            class="w-[200px] px-5 py-4 text-[20px] font-bold text-white bg-[#A35C5C] rounded-[10px]
+                                shadow-[0px_3px_5px_1px_rgba(13,14,15,0.322)]
+                                hover:bg-[#ff5858] cursor-pointer">
+                        Logout
+                    </button>
+                </form>
             </div>
 
         </div>
