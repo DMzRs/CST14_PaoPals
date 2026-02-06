@@ -27,17 +27,17 @@
             <div class="">
                 <ul class="flex items-center justify-evenly">
                     <li class="px-5 list-none">
-                        <a href="{{ route('frontPage') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="@if(Auth::check()){{ route('frontPage') }}@else{{ route('login') }}@endif" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Home
                         </a>
                     </li>
                     <li class="px-5 list-none">
-                        <a href="{{ route('menu') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="@if(Auth::check()){{ route('menu') }}@else{{ route('login') }}@endif" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Menu
                         </a>
                     </li>
                     <li class="px-5 list-none">
-                        <a href="{{ route('contact') }}" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="@if(Auth::check()){{ route('contact') }}@else{{ route('login') }}@endif" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Contact Us
                         </a>
                     </li>

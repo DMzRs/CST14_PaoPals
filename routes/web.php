@@ -10,7 +10,7 @@ Route::get('/', function () {
 })->name('frontPage');
 
 //For displaying login form
-Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
+Route::get('/login', [UserController::class, 'showLoginForm'])->name('login')->middleware('guest');
 
 //For processing login form
 Route::post('/login', [UserController::class, 'login'])->name('login');
@@ -22,7 +22,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/adminLogout', [UserController::class, 'adminLogout'])->name('adminLogout');
 
 //For displaying registration form
-Route::get('/register', [UserController::class, 'showRegistrationForm']);
+Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register')->middleware('guest');
 
 //For processing registration form
 Route::post('/register', [UserController::class, 'register'])->name('register');

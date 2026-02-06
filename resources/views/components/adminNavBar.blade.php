@@ -20,7 +20,7 @@
                 <form action="{{ route('adminLogout') }}" method="POST">
                     @csrf
                     <button type="submit"
-                            class="w-[200px] px-5 py-4 text-[20px] font-bold text-white bg-[#A35C5C] rounded-[10px]
+                            class="w-[200px] px-5 py-4 mt-3 text-[20px] font-bold text-white bg-[#A35C5C] rounded-[10px]
                                 shadow-[0px_3px_5px_1px_rgba(13,14,15,0.322)]
                                 hover:bg-[#ff5858] cursor-pointer">
                         Logout

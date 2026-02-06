@@ -3,7 +3,16 @@
 
         <!-- Header -->
         <div class="self-start ml-64">
-            <h1 class="text-[#CE5959] text-[30px] ml-5 font-bold">Hello, James Oliver Mendoza</h1>
+            <h1 class="text-[#CE5959] text-[30px] m-0 ml-5 font-bold">
+                Hello, 
+                @if(Auth::guard('admin')->check())
+                    {{ Auth::guard('admin')->user()->name }}
+                @elseif(Auth::check())
+                    {{ Auth::user()->name }}
+                @else
+                    Guest
+                @endif
+            </h1>
         </div>
 
         <div class="mt-5 flex w-full">

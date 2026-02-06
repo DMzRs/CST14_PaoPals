@@ -9,12 +9,13 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    //
+    //show login form
     public function showLoginForm()
     {
         return view('userLogin');
     }
 
+    //handle login for both users and admins
     public function login(Request $request)
     {
         $request->validate([
@@ -37,6 +38,7 @@ class UserController extends Controller
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
+    //handle logout for user
     public function logout(Request $request)
     {
         Auth::logout();
@@ -47,6 +49,7 @@ class UserController extends Controller
         return redirect('/login');
     }
 
+    //handle user registration
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -62,17 +65,20 @@ class UserController extends Controller
         return redirect('/login');
     }
 
+    //show registration form
     public function showRegistrationForm()
     {
         return view('userRegister');
     }
 
+    //show user profile
     public function showProfile()
     {
         $user = Auth::user();
         return view('userProfilePage', compact('user'));
     }
     
+    //update user profile
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -106,6 +112,7 @@ class UserController extends Controller
         return view('adminDashboard', compact('admin'));
     }
 
+    // handle logout for admin
     public function adminLogout(Request $request)
     {
         Auth::guard('admin')->logout();
