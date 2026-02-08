@@ -18,6 +18,11 @@ class StockOut extends Model
         'cause',
     ];
 
+    // Cast date fields to proper types
+    protected $casts = [
+        'dateUsed' => 'datetime',
+    ];
+
     // Relationship to StockIn
     public function stockin()
     {

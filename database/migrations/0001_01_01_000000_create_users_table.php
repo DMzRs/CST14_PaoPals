@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('contactNumber', 11);
             $table->string('address', 500);
             $table->string('password'); // Store hashed password
+            $table->boolean('is_admin')->default(false); // 0 = user, 1 = admin
             $table->timestamps(); // created_at & updated_at
         });
     }

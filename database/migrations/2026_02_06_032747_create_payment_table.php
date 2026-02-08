@@ -16,7 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('orderId');
             $table->unsignedBigInteger('userId');
             $table->datetime('paymentDate')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->enum('paymentMethod', ['Cash', 'Card', 'Gcash']);
+            
+            // 0 = Cash, 1 = Card, 2 = Gcash
+            $table->tinyInteger('paymentMethod');
+            
             $table->decimal('paymentTotalCost', 10, 2);
             $table->timestamps();
 

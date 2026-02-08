@@ -18,7 +18,10 @@ return new class extends Migration
             $table->datetime('dateCreated')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->date('expirationDate');
             $table->integer('remainingStock');
-            $table->enum('status', ['Available', 'Unavailable'])->default('Available');
+
+            // 0 = Available, 1 = Unavailable
+            $table->tinyInteger('status')->default(0);
+
             $table->timestamps();
 
             $table->foreign('productId')->references('id')->on('product')->onDelete('cascade');

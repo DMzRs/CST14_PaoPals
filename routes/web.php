@@ -1,77 +1,82 @@
 <?php
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\InventoryController;
 
+// Public routes
 Route::get('/', function () {
+    $user = Auth::user();
+
+    // Block admins from accessing the front page
+    if ($user && $user->is_admin) {
+        abort(403); // or redirect to adminDashboard
+        // return redirect('/adminDashboard'); // optional: redirect instead of abort
+    }
+
     return view('frontPage');
 })->name('frontPage');
 
-//For displaying login form
-Route::get('/login', [UserController::class, 'showLoginForm'])->name('login')->middleware('guest');
-
-//For processing login form
-Route::post('/login', [UserController::class, 'login'])->name('login');
-
-//For processing logout
+// Login & logout
+Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-//For processing admin logout
-Route::post('/adminLogout', [UserController::class, 'adminLogout'])->name('adminLogout');
+// Registration
+Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [UserController::class, 'register']);
 
-//For displaying registration form
-Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register')->middleware('guest');
-
-//For processing registration form
-Route::post('/register', [UserController::class, 'register'])->name('register');
-
-//For displaying user profile page
-Route::get('/profile', [UserController::class,'showProfile'])->middleware('auth')->name('profile');
-
-//For processing user profile update
-Route::post('/profile', [UserController::class,'updateProfile'])->middleware('auth');
-
-//For displaying user profile page
+// User-only routes
+Route::get('/profile', [UserController::class,'showProfile'])->name('profile');
+Route::post('/profile', [UserController::class,'updateProfile']);
 Route::get('/history', function () {
+    $user = Auth::user();
+    if (!$user || $user->is_admin) abort(403);
     return view('userHistory');
 })->name('history');
 
-//For displaying menu page
 Route::get('/menu', function () {
+    $user = Auth::user();
+    if (!$user || $user->is_admin) abort(403);
     return view('userMenu');
 })->name('menu');
 
-//For displaying contact us page
 Route::get('/contact', function () {
+    $user = Auth::user();
+    if (!$user || $user->is_admin) abort(403);
     return view('userContactUs');
 })->name('contact');
 
-//For displaying cart page
 Route::get('/cart', function () {
+    $user = Auth::user();
+    if (!$user || $user->is_admin) abort(403);
     return view('userCartPage');
 })->name('cart');
 
-//For displaying admin dashboard
+Route::get('/orderSuccess', function () {
+    $user = Auth::user();
+    if (!$user || $user->is_admin) abort(403);
+    return view('userOrderSuccess');
+});
+
+// Admin-only routes
 Route::get('/adminDashboard', [UserController::class, 'showAdminDashboard'])->name('adminDashboard');
 
-//For displaying admin product management page
 Route::get('/adminProduct', function () {
+    $user = Auth::user();
+    if (!$user || !$user->is_admin) abort(403);
     return view('adminProductPage');
 })->name('adminProduct');
 
-//For displaying admin inventory management page
-Route::get('/adminInventory', function () {
-    return view('adminInventoryPage');
-})->name('adminInventory');
-
-//For displaying admin order management page
 Route::get('/adminFeedback', function () {
+    $user = Auth::user();
+    if (!$user || !$user->is_admin) abort(403);
     return view('adminFeedbackPage');
 })->name('adminFeedback');
 
-//For displaying order success page
-Route::get('/orderSuccess', function () {
-    return view('userOrderSuccess');
-});
+
+// Inventory routes
+Route::get('/adminInventory', [InventoryController::class, 'index'])->name('inventory.index');
+
+// Route to handle adding new product + stock
+Route::post('/adminInventory', [InventoryController::class, 'store'])->name('inventory.store');

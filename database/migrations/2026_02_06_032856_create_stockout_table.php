@@ -16,7 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('stockinId');
             $table->integer('quantity');
             $table->datetime('dateUsed')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->enum('cause', ['Sold', 'Expired']);
+
+            // 0 = Sold, 1 = Expired
+            $table->tinyInteger('cause');
+
             $table->timestamps();
 
             $table->foreign('stockinId')->references('id')->on('stockin')->onDelete('cascade');

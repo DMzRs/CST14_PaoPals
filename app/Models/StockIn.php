@@ -20,9 +20,21 @@ class StockIn extends Model
         'status',
     ];
 
+    // Cast date fields to proper types
+    protected $casts = [
+        'dateCreated' => 'datetime',
+        'expirationDate' => 'date',
+    ];
+
     // Relationship to Product
     public function product()
     {
         return $this->belongsTo(Product::class, 'productId');
+    }
+
+    // Relationship to StockOuts
+    public function stockouts()
+    {
+        return $this->hasMany(StockOut::class, 'stockinId');
     }
 }

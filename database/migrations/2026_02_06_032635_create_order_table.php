@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('userId');
             $table->datetime('orderDate')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->enum('orderStatus', ['Pending', 'Completed'])->default('Pending');
+            
+            // 0 = Pending, 1 = Completed
+            $table->tinyInteger('orderStatus')->default(0);
+
             $table->timestamps();
 
             $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');

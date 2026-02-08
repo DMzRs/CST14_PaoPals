@@ -17,7 +17,7 @@
             </div>
 
             <div class="mr-[100px]">
-                <form action="{{ route('adminLogout') }}" method="POST">
+                <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit"
                             class="w-[200px] px-5 py-4 mt-3 text-[20px] font-bold text-white bg-[#A35C5C] rounded-[10px]
