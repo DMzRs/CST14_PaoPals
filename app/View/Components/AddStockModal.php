@@ -17,6 +17,6 @@ class AddStockModal extends Component
 
     public function render()
     {
-        return view('components.add-stock-modal');
+        return view('components.addStockModal');
     }
 }

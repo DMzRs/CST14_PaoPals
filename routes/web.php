@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MenuController;
 
 // Public routes
 Route::get('/', function () {
@@ -58,6 +59,12 @@ Route::get('/orderSuccess', function () {
     if (!$user || $user->is_admin) abort(403);
     return view('userOrderSuccess');
 });
+
+// Menu route for users (already used in user view)
+Route::get('/menu/all', [MenuController::class, 'all'])->name('menu.all');
+Route::get('/menu/siopao', [MenuController::class, 'siopao'])->name('menu.siopao');
+Route::get('/menu/drinks', [MenuController::class, 'drinks'])->name('menu.drinks');
+Route::get('/menu/desserts', [MenuController::class, 'desserts'])->name('menu.desserts');
 
 // Admin-only routes
 Route::get('/adminDashboard', [UserController::class, 'showAdminDashboard'])->name('adminDashboard');

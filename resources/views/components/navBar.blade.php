@@ -32,7 +32,7 @@
                         </a>
                     </li>
                     <li class="px-5 list-none">
-                        <a href="@if(Auth::check()){{ route('menu') }}@else{{ route('login') }}@endif" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
+                        <a href="@if(Auth::check()){{ route('menu.all') }}@else{{ route('login') }}@endif" class="text-black text-[16px] font-bold hover:text-[#CE5959] hover:underline">
                             Menu
                         </a>
                     </li>

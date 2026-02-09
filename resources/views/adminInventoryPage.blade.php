@@ -62,7 +62,7 @@
     </section>
 
     <!-- Include Add Stock Modal Component -->
-    <x-add-stock-modal modal-id="addStocksModal" form-action="{{ route('inventory.store') }}" />
+    <x-addStockModal modal-id="addStocksModal" form-action="{{ route('inventory.store') }}" />
 
     <!-- Vanilla JS for Modal -->
     <script>
