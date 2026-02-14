@@ -53,7 +53,7 @@
                                 class="mx-5 cursor-pointer"
                                 alt="profile">
                         </a>
-                        <a href="{{ route('cart') }}">
+                        <a href="{{ route('cart.index') }}">
                         <img src="{{ asset('images/icons/cart_icon.png') }}"
                             class="mx-5 cursor-pointer"
                             alt="cart">

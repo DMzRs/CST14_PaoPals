@@ -20,6 +20,11 @@ class Product extends Model
         'productPrice',
     ];
 
+    public function stockIns()
+    {
+        return $this->hasMany(StockIn::class, 'productId');
+    }
+    
     // Optional: if you want to relate products to orders
     public function orders()
     {

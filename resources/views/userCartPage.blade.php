@@ -5,7 +5,8 @@
         <div class="self-start">
             <h1 class="text-[#CE5959] text-[30px] flex items-center gap-2 m-0 ml-[50px]">
                 Your Order Cart
-                <img src="../Images/icons/orderCart_icon.png" class="w-[40px] h-[35px]" alt="order-icon">
+                <img src="{{ asset('Images/icons/orderCart_icon.png') }}"
+                     class="w-[40px] h-[35px]" alt="order-icon">
             </h1>
         </div>
 
@@ -17,28 +18,98 @@
             <h2 class="text-[#CE5959] text-[20px] p-2 ml-[135px]">Total Price</h2>
         </div>
 
-        <!-- Order Row -->
+        @php $cart = session('cart', []); @endphp
+
+        @forelse ($cart as $id => $item)
         <div class="w-[1300px] mt-5 flex justify-between items-center">
-            <h2 class="text-[18px] font-normal m-0 w-[190px]">Sample Product Name</h2>
 
-            <img src="../Images/Siopao/sample_1.png" class="w-[80px] h-[80px]" alt="sampleOrder">
+            <!-- Product Name -->
+            <h2 class="text-[18px] font-normal m-0 w-[190px]">{{ $item['name'] }}</h2>
 
-            <h2 class="text-[18px] font-normal m-0">₱90.00</h2>
+            <!-- Product Image -->
+            <img src="{{ asset($item['image']) }}" class="w-[80px] h-[80px]" alt="{{ $item['name'] }}">
 
+            <!-- Price -->
+            <h2 class="text-[18px] font-normal m-0">₱{{ number_format($item['price'], 2) }}</h2>
+
+            <!-- Quantity Controls -->
             <div class="flex items-center justify-evenly border border-black w-[100px]">
-                <button class="bg-white border-0">
-                    <img src="../Images/icons/deduct_icon.png" alt="deduct">
-                </button>
-                <h2 class="m-0 text-[18px]">1</h2>
-                <button class="bg-white border-0">
-                    <img src="../Images/icons/add_icon.png" alt="add">
-                </button>
+
+                <!-- Deduct Button -->
+                <form action="{{ route('cart.decrease', $id) }}" method="POST">
+                    @csrf
+                    <button class="bg-white border-0">
+                        <img src="{{ asset('Images/icons/deduct_icon.png') }}" alt="deduct">
+                    </button>
+                </form>
+
+                <h2 class="m-0 text-[18px] quantity-display">{{ $item['quantity'] }}</h2>
+
+                <!-- Add Button (always clickable) -->
+                <form action="{{ route('cart.increase', $id) }}" method="POST" class="add-form">
+                    @csrf
+                    <button type="submit" class="bg-white border-0">
+                        <img src="{{ asset('Images/icons/add_icon.png') }}" alt="add">
+                    </button>
+                </form>
+
             </div>
 
-            <h2 class="text-[18px] font-normal m-0">₱90.00</h2>
+            <!-- Total Price -->
+            <h2 class="text-[18px] font-normal m-0">₱{{ number_format($item['price'] * $item['quantity'], 2) }}</h2>
 
-            <img src="../Images/icons/deleteOrder_icon.png" class="cursor-pointer" alt="deleteOrder">
+            <!-- Delete Button -->
+            <form action="{{ route('cart.remove', $id) }}" method="POST">
+                @csrf
+                <button class="cursor-pointer bg-transparent border-0">
+                    <img src="{{ asset('Images/icons/deleteOrder_icon.png') }}" alt="deleteOrder">
+                </button>
+            </form>
+
+        </div>
+        @empty
+        <p class="mt-10 text-gray-500 text-lg">Your cart is empty.</p>
+        @endforelse
+
+        <!-- Stock Error Modal -->
+        <div id="stockErrorModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div class="bg-white rounded-lg p-6 w-[400px] text-center relative">
+                <button id="closeStockModal"
+                        class="absolute top-2 right-3 text-2xl font-bold text-gray-600">&times;</button>
+                <h2 class="text-2xl font-bold text-[#CE5959] mb-4">Out of Stock</h2>
+                <p class="text-gray-700">
+                    Sorry, you cannot add more of this item.<br>
+                    The available stock has been reached.
+                </p>
+                <button id="okStockModal"
+                        class="mt-6 px-5 py-2 bg-[#CE5959] text-white rounded hover:bg-[#ff5858]">
+                    OK
+                </button>
+            </div>
         </div>
 
     </section>
+
+    <!-- Show Stock Error Modal if backend sent an error -->
+    @if(session('stock_error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const errorModal = document.getElementById('stockErrorModal');
+            errorModal.classList.remove('hidden');
+        });
+    </script>
+    @endif
+
+    <script>
+        const errorModal = document.getElementById('stockErrorModal');
+        const closeModalBtn = document.getElementById('closeStockModal');
+        const okModalBtn = document.getElementById('okStockModal');
+
+        function closeStockError() { errorModal.classList.add('hidden'); }
+
+        closeModalBtn.onclick = closeStockError;
+        okModalBtn.onclick = closeStockError;
+        window.onclick = (e) => { if(e.target === errorModal) closeStockError(); };
+    </script>
 </x-navBar>

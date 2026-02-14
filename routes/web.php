@@ -4,6 +4,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\AdminProductController;
 
 // Public routes
 Route::get('/', function () {
@@ -66,24 +68,22 @@ Route::get('/menu/siopao', [MenuController::class, 'siopao'])->name('menu.siopao
 Route::get('/menu/drinks', [MenuController::class, 'drinks'])->name('menu.drinks');
 Route::get('/menu/desserts', [MenuController::class, 'desserts'])->name('menu.desserts');
 
+// Cart routesuse
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
+Route::post('/cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+Route::post('/cart/remove/{id}',   [CartController::class, 'remove'])->name('cart.remove');
+
+
 // Admin-only routes
 Route::get('/adminDashboard', [UserController::class, 'showAdminDashboard'])->name('adminDashboard');
 
-Route::get('/adminProduct', function () {
-    $user = Auth::user();
-    if (!$user || !$user->is_admin) abort(403);
-    return view('adminProductPage');
-})->name('adminProduct');
-
-Route::get('/adminFeedback', function () {
-    $user = Auth::user();
-    if (!$user || !$user->is_admin) abort(403);
-    return view('adminFeedbackPage');
-})->name('adminFeedback');
-
+Route::get('/adminProduct', [AdminProductController::class, 'index'])
+     ->name('adminProduct.index')
+     ->middleware('auth'); // ensure only logged-in admins
 
 // Inventory routes
 Route::get('/adminInventory', [InventoryController::class, 'index'])->name('inventory.index');
-
 // Route to handle adding new product + stock
 Route::post('/adminInventory', [InventoryController::class, 'store'])->name('inventory.store');
