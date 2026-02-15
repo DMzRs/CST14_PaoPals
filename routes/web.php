@@ -6,19 +6,14 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\UserHistoryController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\AdminFeedbackController;
+use App\Http\Controllers\FrontPageController;
 
 // Public routes
-Route::get('/', function () {
-    $user = Auth::user();
-
-    // Block admins from accessing the front page
-    if ($user && $user->is_admin) {
-        abort(403); // or redirect to adminDashboard
-        // return redirect('/adminDashboard'); // optional: redirect instead of abort
-    }
-
-    return view('frontPage');
-})->name('frontPage');
+Route::get('/', [FrontPageController::class, 'index'])->name('frontPage');
 
 // Login & logout
 Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
@@ -32,11 +27,6 @@ Route::post('/register', [UserController::class, 'register']);
 // User-only routes
 Route::get('/profile', [UserController::class,'showProfile'])->name('profile');
 Route::post('/profile', [UserController::class,'updateProfile']);
-Route::get('/history', function () {
-    $user = Auth::user();
-    if (!$user || $user->is_admin) abort(403);
-    return view('userHistory');
-})->name('history');
 
 Route::get('/menu', function () {
     $user = Auth::user();
@@ -68,16 +58,31 @@ Route::get('/menu/siopao', [MenuController::class, 'siopao'])->name('menu.siopao
 Route::get('/menu/drinks', [MenuController::class, 'drinks'])->name('menu.drinks');
 Route::get('/menu/desserts', [MenuController::class, 'desserts'])->name('menu.desserts');
 
-// Cart routesuse
+// Cart routes for users
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
 Route::post('/cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
 Route::post('/cart/remove/{id}',   [CartController::class, 'remove'])->name('cart.remove');
 
+// Checkout route for users
+Route::post('/checkout', [CartController::class, 'processCheckout'])
+    ->name('checkout.process');
+
+Route::get('/thank-you', [CartController::class, 'orderSuccess'])
+    ->name('checkout.orderSuccess');
+
+// History route for users
+Route::get('/history', [UserHistoryController::class, 'orderHistory'])
+    ->middleware('auth')   // Make sure only logged-in users can see it
+    ->name('user.orderHistory');
+
+// Contact Us route for users
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
 // Admin-only routes
-Route::get('/adminDashboard', [UserController::class, 'showAdminDashboard'])->name('adminDashboard');
+Route::get('/adminDashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth']);
 
 Route::get('/adminProduct', [AdminProductController::class, 'index'])
      ->name('adminProduct.index')
@@ -85,5 +90,15 @@ Route::get('/adminProduct', [AdminProductController::class, 'index'])
 
 // Inventory routes
 Route::get('/adminInventory', [InventoryController::class, 'index'])->name('inventory.index');
-// Route to handle adding new product + stock
-Route::post('/adminInventory', [InventoryController::class, 'store'])->name('inventory.store');
+
+// Add product
+Route::post('/adminInventory/product', [InventoryController::class, 'storeProduct'])->name('inventory.storeProduct');
+
+// Add stock
+Route::post('/adminInventory/stock', [InventoryController::class, 'storeStock'])->name('inventory.storeStock');
+
+// Admin Feedback route
+Route::get('/adminFeedback', [AdminFeedbackController::class, 'index'])
+     ->name('adminFeedback.index')
+     ->middleware('auth'); // only accessible to logged-in admins
+

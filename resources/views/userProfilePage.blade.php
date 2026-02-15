@@ -22,7 +22,7 @@
                     Account Info
                 </a>
 
-                <a href="/history"
+                <a href="{{ route('user.orderHistory') }}"
                    class="w-[250px] pl-[30px] py-2 text-[22px] font-semibold border-b border-black">
                     Order History
                 </a>

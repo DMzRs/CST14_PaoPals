@@ -33,12 +33,12 @@
             <h2 class="text-[18px] font-normal m-0">₱{{ number_format($item['price'], 2) }}</h2>
 
             <!-- Quantity Controls -->
-            <div class="flex items-center justify-evenly border border-black w-[100px]">
+            <div class="flex items-center justify-evenly border border-black w-[80px] h-[30px]">
 
                 <!-- Deduct Button -->
                 <form action="{{ route('cart.decrease', $id) }}" method="POST">
                     @csrf
-                    <button class="bg-white border-0">
+                    <button class="bg-white border-0 mb-[16px]">
                         <img src="{{ asset('Images/icons/deduct_icon.png') }}" alt="deduct">
                     </button>
                 </form>
@@ -71,6 +71,16 @@
         <p class="mt-10 text-gray-500 text-lg">Your cart is empty.</p>
         @endforelse
 
+        {{-- Checkout Button --}}
+        @if(!empty($cart))
+        <button
+            onclick="openCheckoutModal()"
+            class="w-64 mt-10 bg-[#CE5959] text-white font-bold py-3 rounded hover:bg-[#ff5858] transition">
+            Checkout
+        </button>
+        @endif
+
+
         <!-- Stock Error Modal -->
         <div id="stockErrorModal"
             class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -86,6 +96,47 @@
                         class="mt-6 px-5 py-2 bg-[#CE5959] text-white rounded hover:bg-[#ff5858]">
                     OK
                 </button>
+            </div>
+        </div>
+
+        <!-- Checkout Modal -->
+        <div id="checkoutModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+
+            <div class="bg-white rounded-lg p-6 w-[420px] text-center relative">
+
+                <button onclick="closeCheckoutModal()"
+                        class="absolute top-2 right-3 text-2xl font-bold text-gray-600">
+                    &times;
+                </button>
+
+                <h2 class="text-2xl font-bold text-[#CE5959] mb-4">
+                    Confirm Checkout
+                </h2>
+
+                <p class="text-gray-700 mb-4">
+                    Please select your payment method
+                </p>
+
+                <form action="{{ route('checkout.process') }}" method="POST">
+                    @csrf
+
+                    <select name="paymentMethod"
+                        class="border border-gray-300 rounded p-2 w-full mb-6"
+                        required>
+                        <option value="">Choose payment method</option>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="GCash">GCash</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
+                    </select>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-[#CE5959] text-white font-bold py-3 rounded hover:bg-[#ff5858] transition">
+                        Confirm Payment
+                    </button>
+                </form>
+
             </div>
         </div>
 
@@ -111,5 +162,23 @@
         closeModalBtn.onclick = closeStockError;
         okModalBtn.onclick = closeStockError;
         window.onclick = (e) => { if(e.target === errorModal) closeStockError(); };
+    </script>
+
+    <script>
+        function openCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('checkoutModal');
+            if (e.target === modal) {
+                closeCheckoutModal();
+            }
+        });
     </script>
 </x-navBar>

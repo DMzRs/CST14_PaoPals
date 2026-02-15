@@ -11,24 +11,17 @@
         <!-- Form + Image -->
         <div class="mx-auto h-['600px'] w-[1000px] flex flex-row items-center justify-between">
 
-            <!-- Form -->
+            <!-- Feedback Form -->
             <div class="w-[800px] h-[500px]">
                 <form
                     class="mt-10 w-[600px] h-[400px] p-[50px] border border-gray-300 rounded-2xl
-                        flex flex-col items-center justify-evenly bg-[#FEFAF8]">
+                        flex flex-col items-center justify-evenly bg-[#FEFAF8]"
+                    method="POST" action="{{ route('feedback.store') }}">
+                    
+                    @csrf
 
-                    <input type="text" name="name" placeholder="Your Name" required
-                        class="w-[500px] my-2 px-3 py-2 text-lg border border-gray-300 rounded-xl">
-
-                    <input type="email" name="email" placeholder="Your Email" required
-                        class="w-[500px] my-2 px-3 py-2 text-lg border border-gray-300 rounded-xl">
-
-                    <input type="text" name="subject" placeholder="Subject" required
-                        class="w-[500px] my-2 px-3 py-2 text-lg border border-gray-300 rounded-xl">
-
-                    <textarea name="feedback" rows="6" placeholder="Enter your feedback" required
-                            class="w-[500px] my-2 px-3 py-2 text-lg border border-gray-300 rounded-xl resize-none">
-                    </textarea>
+                    <textarea name="message" rows="6" placeholder="Enter your feedback" required
+                        class="w-[500px] my-2 px-3 py-2 text-lg border border-gray-300 rounded-xl resize-none"></textarea>
 
                     <button type="submit"
                             class="self-end px-8 py-2 bg-[#CE5959] rounded-full
@@ -37,6 +30,7 @@
                     </button>
                 </form>
             </div>
+
 
             <!-- Image -->
             <div>

@@ -6,9 +6,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\StockOut;
 
 class UserController extends Controller
 {
+    
     // show login form
     public function showLoginForm()
     {
@@ -117,16 +120,4 @@ class UserController extends Controller
         return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
 
-    // show admin dashboard
-    public function showAdminDashboard()
-    {
-        $user = Auth::user();
-
-        // block normal users from accessing admin dashboard
-        if (!$user || !$user->is_admin) {
-            abort(403);
-        }
-
-        return view('adminDashboard', compact('user'));
-    }
 }

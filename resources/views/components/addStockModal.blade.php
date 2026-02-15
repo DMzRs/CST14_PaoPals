@@ -1,44 +1,48 @@
+@props([
+    'modalId', 
+    'formAction', 
+    'products' => []
+])
+
 <div id="{{ $modalId }}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
     <div class="modal-content bg-white rounded-lg w-1/2 p-6 relative">
         <span class="close-modal-btn absolute top-3 right-3 cursor-pointer text-xl font-bold">&times;</span>
 
-        <h2 class="text-2xl font-bold mb-4 text-[#CE5959]">Add New Product & Stock</h2>
+        <h2 class="text-2xl font-bold mb-4 text-[#CE5959]">Add Stock to Existing Product</h2>
 
-        <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ $formAction }}">
             @csrf
+
             <div class="mb-3">
-                <label class="block mb-1">Product Image:</label>
-                <input type="file" name="productImage" class="w-full border p-2 rounded" required>
-            </div>
-            <div class="mb-3">
-                <label class="block mb-1">Product Name:</label>
-                <input type="text" name="productName" class="w-full border p-2 rounded" required>
-            </div>
-            <div class="mb-3">
-                <label class="block mb-1">Category:</label>
-                <select name="productCategory" class="w-full border p-2 rounded" required>
-                    <option value="Siopao">Siopao</option>
-                    <option value="Drinks">Drinks</option>
-                    <option value="Dessert">Dessert</option>
+                <label class="block mb-1">Select Product:</label>
+                <select name="productId" class="w-full border p-2 rounded" required>
+                    <option value="" disabled selected>-- Choose a product --</option>
+                    @foreach($products as $product)
+                        <option value="{{ $product->id }}">
+                            {{ $product->productName }} ({{ $product->productCategory }})
+                        </option>
+                    @endforeach
                 </select>
             </div>
+
             <div class="mb-3">
-                <label class="block mb-1">Price:</label>
-                <input type="number" step="0.01" name="productPrice" class="w-full border p-2 rounded" required>
+                <label class="block mb-1">Quantity to Add:</label>
+                <input type="number" name="quantity" class="w-full border p-2 rounded" min="1" required>
             </div>
+
             <div class="mb-3">
-                <label class="block mb-1">Quantity:</label>
-                <input type="number" name="quantity" class="w-full border p-2 rounded" required>
-            </div>
-            <div class="mb-3">
-                <label class="block mb-1">Date Arrived:</label>
+                <label class="block mb-1">Date Added:</label>
                 <input type="date" name="dateCreated" class="w-full border p-2 rounded" required>
             </div>
+
             <div class="mb-3">
                 <label class="block mb-1">Expiration Date:</label>
                 <input type="date" name="expirationDate" class="w-full border p-2 rounded" required>
             </div>
-            <button type="submit" class="bg-[#CE5959] text-white px-4 py-2 rounded hover:bg-[#ff5858]">Add Stock</button>
+
+            <button type="submit" class="bg-[#CE5959] text-white px-4 py-2 rounded hover:bg-[#ff5858]">
+                Add Stock
+            </button>
         </form>
     </div>
 </div>

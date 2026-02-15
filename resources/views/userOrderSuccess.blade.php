@@ -28,26 +28,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @forelse ($orderItems as $item)
+                    @forelse ($orderItems as $item)
                         <tr class="border-b border-red-600">
                             <td class="p-4 text-center">
-                                <img src="{{ asset('Images/products/' . $item['productImage']) }}" alt="picture" class="w-20 h-20 mx-auto">
+                                <img src="{{ asset($item['productImage']) }}" alt="picture" class="w-20 h-20 mx-auto">
                             </td>
-                            <td class="p-4 text-center">{{ $item['productName'] }} x {{ $item['quantity'] }}</td>
-                            <td class="p-4 text-center">₱{{ number_format($item['subTotal'], 2) }}</td>
+                            <td class="p-4 text-center">
+                                {{ $item['productName'] }} x {{ $item['quantity'] }}
+                            </td>
+                            <td class="p-4 text-center">
+                                ₱{{ number_format($item['subTotal'], 2) }}
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="p-6 text-center italic text-gray-500">No recent orders found.</td>
+                            <td colspan="3" class="p-6 text-center italic text-gray-500">
+                                No recent orders found.
+                            </td>
                         </tr>
                     @endforelse
 
                     @if(!empty($orderItems))
                         <tr class="font-bold">
                             <td colspan="2" class="p-4 text-right">Total:</td>
-                            <td class="p-4 text-center">₱{{ number_format($totalCost, 2) }}</td>
+                            <td class="p-4 text-center">
+                                ₱{{ number_format($totalCost, 2) }}
+                            </td>
                         </tr>
-                    @endif --}}
+                    @endif
                 </tbody>
             </table>
         </div>

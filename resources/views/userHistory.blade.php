@@ -1,5 +1,4 @@
 <x-navBar>
-
     <section class="mx-auto mt-[150px] w-[1700px] flex flex-col items-center justify-center">
 
         <!-- Header -->
@@ -22,7 +21,7 @@
                     Account Info
                 </a>
 
-                <a href="/history"
+                <a href="{{ route('user.orderHistory')  }}"
                    class="w-[250px] pl-[30px] py-2 text-[22px] font-semibold border-b border-black bg-[#F1B9B2]">
                     Order History
                 </a>
@@ -35,53 +34,44 @@
                     Your Past Orders
                 </h3>
 
-                {{-- If no orders --}}
-                {{-- <h2 class="my-12 text-[#CE5959] text-2xl font-medium">
-                    You do not have any saved orders.
-                </h2> --}}
+                @if($orders->isEmpty())
+                    <h2 class="my-12 text-[#CE5959] text-2xl font-medium">
+                        You do not have any saved orders.
+                    </h2>
+                @else
+                    <!-- Table -->
+                    <table class="mt-5 w-[800px] border-collapse text-center">
+                        <thead>
+                            <tr class="border-y border-black">
+                                <th class="py-2 text-[#CE5959] font-bold">
+                                    Items Ordered
+                                </th>
+                                <th class="py-2 text-[#CE5959] font-bold">
+                                    Quantity
+                                </th>
+                                <th class="py-2 text-[#CE5959] font-bold">
+                                    Total Price
+                                </th>
+                                <th class="py-2 text-[#CE5959] font-bold">
+                                    Date
+                                </th>
+                            </tr>
+                        </thead>
 
-                <!-- Table -->
-                <table class="mt-5 w-[800px] border-collapse text-center">
-                    <thead>
-                        <tr class="border-y border-black">
-                            <th class="py-2 text-[#CE5959] font-bold">
-                                Items Ordered
-                            </th>
-                            <th class="py-2 text-[#CE5959] font-bold">
-                                Quantity
-                            </th>
-                            <th class="py-2 text-[#CE5959] font-bold">
-                                Total Price
-                            </th>
-                            <th class="py-2 text-[#CE5959] font-bold">
-                                Date
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="border border-black">
-                        <tr class="border-b border-black">
-                            <td class="py-2">Pork Asado Siopao</td>
-                            <td class="py-2">1</td>
-                            <td class="py-2">₱90.00</td>
-                            <td class="py-2">2/05/2025</td>
-                        </tr>
-
-                        <tr class="border-b border-black">
-                            <td class="py-2">Pork Asado Siopao</td>
-                            <td class="py-2">1</td>
-                            <td class="py-2">₱90.00</td>
-                            <td class="py-2">2/05/2025</td>
-                        </tr>
-
-                        <tr class="border-b border-black">
-                            <td class="py-2">Pork Asado Siopao</td>
-                            <td class="py-2">1</td>
-                            <td class="py-2">₱90.00</td>
-                            <td class="py-2">2/05/2025</td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <tbody class="border border-black">
+                            @foreach($orders as $order)
+                                @foreach($order->orderItems as $item)
+                                    <tr class="border-b border-black">
+                                        <td class="py-2">{{ $item->product->productName }}</td>
+                                        <td class="py-2">{{ $item->quantity }}</td>
+                                        <td class="py-2">₱{{ number_format($item->quantity * $item->unitPrice, 2) }}</td>
+                                        <td class="py-2">{{ \Carbon\Carbon::parse($order->orderDate)->format('m/d/Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
 
             </div>
         </div>

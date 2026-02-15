@@ -18,9 +18,9 @@
             <!-- Sidebar Tabs -->
             <div class="flex flex-col justify-center items-center w-72 self-start">
                 <a href="/adminDashboard" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black dashboard">Dashboard</a>
-                <a href="/adminProduct" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black products">Products</a>
+                <a href="{{ route('adminProduct.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black products">Products</a>
                 <a href="/adminInventory" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black inventory">Inventory</a>
-                <a href="/adminFeedback" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black feedback bg-[#F1B9B2]">Feedbacks</a>
+                <a href="{{ route('adminFeedback.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black feedback bg-[#F1B9B2]">Feedbacks</a>
             </div>
 
             <!-- Feedback Container -->
@@ -31,21 +31,21 @@
 
                 <!-- Feedback Messages Box -->
                 <div class="flex flex-col items-center justify-center mt-5 mb-5 p-5 w-[1200px] border border-gray-400 rounded bg-white">
-
                     <div class="w-full max-w-[1100px]">
 
-                        <!-- Single Message -->
-                        <div class="border border-[#CE5959] rounded p-4 mb-3 text-justify">
-                            <div class="flex justify-between text-[#CE5959] font-bold text-sm mb-2">
-                                <strong>From James Oleber</strong>
-                                <span>2/05/2025</span>
+                        @forelse($feedbacks as $fb)
+                            <div class="border border-[#CE5959] rounded p-4 mb-3 max-h-40 overflow-y-auto break-words">
+                                <div class="flex justify-between text-[#CE5959] font-bold text-sm mb-2">
+                                    <strong>From: {{ $fb->user ? $fb->user->firstName . ' ' . $fb->user->lastName : 'Guest' }}</strong>
+                                    <span>{{ \Carbon\Carbon::parse($fb->createdAt)->format('d/m/Y') }}</span>
+                                </div>
+                                <p class="text-[#CE5959] text-justify">
+                                    {{ $fb->message }}
+                                </p>
                             </div>
-                            <p class="text-[#CE5959]">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit omnis voluptas fugiat hic eaque quisquam optio. Vitae ipsum quos nobis odio, deleniti eius reiciendis harum minus, quaerat dolor ratione consectetur? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vel provident id voluptatum a, sunt, incidunt expedita ullam debitis magni ipsa molestias. Numquam dolorem et doloribus culpa quia consequatur ullam sint.
-                            </p>
-                        </div>
-
-                        <!-- More messages can be added here in the same format -->
+                        @empty
+                            <p class="text-[#CE5959] text-center">No feedback messages yet.</p>
+                        @endforelse
 
                     </div>
                 </div>

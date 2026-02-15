@@ -26,9 +26,22 @@ class Product extends Model
     }
     
     // Optional: if you want to relate products to orders
-    public function orders()
+    public function orderItems()
     {
-        return $this->hasMany(Order::class, 'product_id'); 
-        // assumes you add a product_id foreign key in your orders table
+        return $this->hasMany(OrderItem::class, 'productId'); 
+        // assumes you add a productId foreign key in your order_items table
+    }
+
+    // Through StockIns, get all stockouts
+    public function stockouts()
+    {
+        return $this->hasManyThrough(
+            StockOut::class,  // Final model
+            StockIn::class,   // Intermediate model
+            'productId',      // Foreign key on StockIn
+            'stockinId',      // Foreign key on StockOut
+            'id',             // Local key on Product
+            'id'              // Local key on StockIn
+        );
     }
 }
