@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Google Font --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,7 +78,6 @@
                     });
                 </script>
 
-
                 <!-- Sign In Button -->
                 <button type="submit"
                         class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white font-medium text-base px-10 py-2 rounded-full transition mb-0 mt-3">
@@ -85,7 +85,6 @@
                 </button>
             </form>
         </div>
-
 
         <!-- Create Account -->
         <div class="w-[700px] h-[150px] mt-6 bg-[#F1B9B2] border border-black rounded-2xl
@@ -101,5 +100,109 @@
         </div>
 
     </section>
+
+
+    <!-- OTP MODAL -->
+    <div id="otpModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl w-[350px] text-center">
+
+            <h2 class="text-xl font-semibold text-[#CE5959] mb-4">
+                Enter OTP Code
+            </h2>
+
+            <input id="otpInput" type="text" maxlength="6"
+                class="border w-full p-2 rounded mb-3 text-center"
+                placeholder="6-digit code">
+
+            <p id="otpError" class="text-red-500 text-sm mb-2"></p>
+
+            <button onclick="verifyOtp()"
+                    class="bg-[#CE5959] text-white px-6 py-2 rounded-full w-full">
+                Verify
+            </button>
+
+            <button onclick="resendOtp()"
+                    class="mt-3 text-sm text-gray-600 underline">
+                Resend OTP
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <script>
+    const loginForm = document.querySelector('form');
+
+    // CSRF token from Blade
+    const csrfToken = '{{ csrf_token() }}';
+
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(loginForm);
+
+        const response = await fetch("{{ route('login') }}", {
+            method: "POST",
+            credentials: "same-origin", // REQUIRED
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json"
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('otpModal').classList.remove('hidden');
+        } else if (data.error) {
+            alert(data.error);
+        }
+    });
+
+
+    // ✅ VERIFY OTP
+    async function verifyOtp() {
+        const otp = document.getElementById('otpInput').value;
+
+        const response = await fetch("{{ route('verify.otp') }}", {
+            method: "POST",
+            credentials: "same-origin", // VERY IMPORTANT
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ otp: otp })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            document.getElementById('otpError').innerText = data.error;
+        } else if (data.redirect) {
+            window.location.href = data.redirect;
+        }
+    }
+
+
+    // ✅ RESEND OTP
+    async function resendOtp() {
+        const response = await fetch("{{ route('resend.otp') }}", {
+            method: "POST",
+            credentials: "same-origin", // REQUIRED
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("OTP resent to your email.");
+        }
+    }
+    </script>
+
 </body>
 </html>

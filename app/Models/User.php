@@ -24,7 +24,9 @@ class User extends Authenticatable
         'contactNumber',
         'address',
         'password',
-        'is_admin', // 0 = user, 1 = admin
+        'is_admin', //0 for regular user, 1 for admin
+        'otp',
+        'otp_expires_at',
     ];
 
     /**

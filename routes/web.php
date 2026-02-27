@@ -1,7 +1,9 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CartController;
@@ -12,10 +14,13 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\AdminFeedbackController;
 use App\Http\Controllers\FrontPageController;
 
-// Public routes
+////////////////////////////////////////////////////////////
+// PUBLIC ROUTES (no login required)
+////////////////////////////////////////////////////////////
+
 Route::get('/', [FrontPageController::class, 'index'])->name('frontPage');
 
-// Login & logout
+// Login & Logout
 Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
@@ -24,81 +29,85 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [UserController::class, 'register']);
 
-// User-only routes
-Route::get('/profile', [UserController::class,'showProfile'])->name('profile');
-Route::post('/profile', [UserController::class,'updateProfile']);
+// OTP Verification
+Route::post('/verify-otp', [UserController::class, 'verifyOtp'])->name('verify.otp');
+Route::post('/resend-otp', [UserController::class, 'resendOtp'])->name('resend.otp');
 
-Route::get('/menu', function () {
-    $user = Auth::user();
-    if (!$user || $user->is_admin) abort(403);
-    return view('userMenu');
-})->name('menu');
+////////////////////////////////////////////////////////////
+// AUTHENTICATED USER ROUTES (must be logged in)
+////////////////////////////////////////////////////////////
 
-Route::get('/contact', function () {
-    $user = Auth::user();
-    if (!$user || $user->is_admin) abort(403);
-    return view('userContactUs');
-})->name('contact');
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/cart', function () {
-    $user = Auth::user();
-    if (!$user || $user->is_admin) abort(403);
-    return view('userCartPage');
-})->name('cart');
+    // Profile
+    Route::get('/profile', [UserController::class,'showProfile'])->name('profile');
+    Route::post('/profile', [UserController::class,'updateProfile']);
 
-Route::get('/orderSuccess', function () {
-    $user = Auth::user();
-    if (!$user || $user->is_admin) abort(403);
-    return view('userOrderSuccess');
+    // User pages
+    Route::get('/menu', function () {
+        return view('userMenu');
+    })->name('menu');
+
+    Route::get('/contact', function () {
+        return view('userContactUs');
+    })->name('contact');
+
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+    Route::get('/orderSuccess', function () {
+        return view('userOrderSuccess');
+    });
+
+    // Menu categories
+    Route::get('/menu/all', [MenuController::class, 'all'])->name('menu.all');
+    Route::get('/menu/siopao', [MenuController::class, 'siopao'])->name('menu.siopao');
+    Route::get('/menu/drinks', [MenuController::class, 'drinks'])->name('menu.drinks');
+    Route::get('/menu/desserts', [MenuController::class, 'desserts'])->name('menu.desserts');
+
+    // Cart actions
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
+    Route::post('/cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+    Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    // Checkout
+    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/thank-you', [CartController::class, 'orderSuccess'])->name('checkout.orderSuccess');
+
+    // Order history
+    Route::get('/history', [UserHistoryController::class, 'orderHistory'])
+        ->name('user.orderHistory');
+
+    // Feedback submission
+    Route::post('/feedback', [FeedbackController::class, 'store'])
+        ->name('feedback.store');
+
 });
 
-// Menu route for users (already used in user view)
-Route::get('/menu/all', [MenuController::class, 'all'])->name('menu.all');
-Route::get('/menu/siopao', [MenuController::class, 'siopao'])->name('menu.siopao');
-Route::get('/menu/drinks', [MenuController::class, 'drinks'])->name('menu.drinks');
-Route::get('/menu/desserts', [MenuController::class, 'desserts'])->name('menu.desserts');
+////////////////////////////////////////////////////////////
+// ADMIN ROUTES (must be logged in AND admin)
+// Requires custom "admin" middleware
+////////////////////////////////////////////////////////////
 
-// Cart routes for users
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
-Route::post('/cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
-Route::post('/cart/remove/{id}',   [CartController::class, 'remove'])->name('cart.remove');
+Route::middleware(['auth', 'admin'])->group(function () {
 
-// Checkout route for users
-Route::post('/checkout', [CartController::class, 'processCheckout'])
-    ->name('checkout.process');
+    Route::get('/adminDashboard', [AdminDashboardController::class, 'index']);
 
-Route::get('/thank-you', [CartController::class, 'orderSuccess'])
-    ->name('checkout.orderSuccess');
+    Route::get('/adminProduct', [AdminProductController::class, 'index'])
+        ->name('adminProduct.index');
 
-// History route for users
-Route::get('/history', [UserHistoryController::class, 'orderHistory'])
-    ->middleware('auth')   // Make sure only logged-in users can see it
-    ->name('user.orderHistory');
+    // Inventory management
+    Route::get('/adminInventory', [InventoryController::class, 'index'])
+        ->name('inventory.index');
 
-// Contact Us route for users
-Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::post('/adminInventory/product', [InventoryController::class, 'storeProduct'])
+        ->name('inventory.storeProduct');
 
-// Admin-only routes
-Route::get('/adminDashboard', [AdminDashboardController::class, 'index'])
-    ->middleware(['auth']);
+    Route::post('/adminInventory/stock', [InventoryController::class, 'storeStock'])
+        ->name('inventory.storeStock');
 
-Route::get('/adminProduct', [AdminProductController::class, 'index'])
-     ->name('adminProduct.index')
-     ->middleware('auth'); // ensure only logged-in admins
+    // Admin feedback view
+    Route::get('/adminFeedback', [AdminFeedbackController::class, 'index'])
+        ->name('adminFeedback.index');
 
-// Inventory routes
-Route::get('/adminInventory', [InventoryController::class, 'index'])->name('inventory.index');
-
-// Add product
-Route::post('/adminInventory/product', [InventoryController::class, 'storeProduct'])->name('inventory.storeProduct');
-
-// Add stock
-Route::post('/adminInventory/stock', [InventoryController::class, 'storeStock'])->name('inventory.storeStock');
-
-// Admin Feedback route
-Route::get('/adminFeedback', [AdminFeedbackController::class, 'index'])
-     ->name('adminFeedback.index')
-     ->middleware('auth'); // only accessible to logged-in admins
-
+});

@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\StockOut;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    
-    // show login form
+    // SHOW LOGIN FORM
     public function showLoginForm()
     {
         return view('userLogin');
     }
 
-    // handle login for both users and admins
+    // HANDLE LOGIN
     public function login(Request $request)
     {
         $request->validate([
@@ -26,29 +24,108 @@ class UserController extends Controller
             'password' => 'required|min:8',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $user = Auth::user();
+        $user = User::where('email', $request->email)->first();
 
-            // redirect based on role
-            if ($user->is_admin) {
-                return redirect('/adminDashboard');
-            }
-
-            return redirect('/');
+        // Check credentials WITHOUT logging in
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['email' => 'Invalid credentials.']);
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.']);
+        // Generate OTP
+        $otp = rand(100000, 999999);
+
+        $user->update([
+            'otp' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
+
+        // Send email
+        Mail::raw("Your PaoPals OTP code is: $otp (valid for 5 minutes)", function ($msg) use ($user) {
+            $msg->to($user->email)
+                ->subject('Your Login OTP Code');
+        });
+
+        // Store user ID ONLY (not logged in yet)
+        session(['2fa_user_id' => $user->id]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
-    // handle logout (both admin and user)
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6'
+        ]);
+
+        $user = User::find(session('2fa_user_id'));
+
+        if (!$user) {
+            return response()->json(['error' => 'Session expired'], 401);
+        }
+
+        if ($user->otp !== $request->otp) {
+            return response()->json(['error' => 'Invalid OTP'], 422);
+        }
+
+        if (now()->greaterThan($user->otp_expires_at)) {
+            return response()->json(['error' => 'OTP expired'], 422);
+        }
+
+        // Clear OTP
+        $user->update([
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        // NOW log the user in
+        Auth::login($user);
+
+        session()->forget('2fa_user_id');
+
+        return response()->json([
+            'redirect' => $user->is_admin ? '/adminDashboard' : '/'
+        ]);
+    }
+
+    // RESEND OTP
+    public function resendOtp()
+    {
+        $user = User::find(session('2fa_user_id'));
+
+        if (!$user) {
+            return response()->json(['error' => 'Session expired'], 401);
+        }
+
+        $otp = rand(100000, 999999);
+
+        $user->update([
+            'otp' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
+
+        Mail::raw("Your new OTP code is: $otp", function ($msg) use ($user) {
+            $msg->to($user->email)
+                ->subject('New OTP Code');
+        });
+
+        return response()->json(['success' => true]);
+    }
+
+    // LOGOUT
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/login');
+    }
+
+     // show registration form
+    public function showRegistrationForm()
+    {
+        return view('userRegister');
     }
 
     // handle user registration
@@ -69,12 +146,6 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect('/login');
-    }
-
-    // show registration form
-    public function showRegistrationForm()
-    {
-        return view('userRegister');
     }
 
     // show user profile
@@ -119,5 +190,4 @@ class UserController extends Controller
 
         return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
-
 }

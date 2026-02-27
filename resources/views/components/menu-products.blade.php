@@ -15,7 +15,7 @@
             <div class="flex flex-col items-center justify-center rounded-2xl px-10 py-8 shadow-[1px_1px_5px_2px_gray] mr-8 mt-8">
                 <img src="{{ asset($product->productImage) }}" alt="{{ $product->productName }}" class="w-[200px] h-[200px] object-cover">
 
-                <h2 class="mt-2.5 text-[20px] font-semibold">{{ $product->productName }}</h2>
+                <h2 class="mt-2.5 text-[20px] font-semibold w-[200px] text-center truncate">{{ $product->productName }}</h2>
 
                 <form action="{{ route('cart.add') }}" method="POST">
                     @csrf

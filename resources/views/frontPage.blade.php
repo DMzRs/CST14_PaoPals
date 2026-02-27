@@ -45,7 +45,7 @@
                             class="w-[200px] h-[200px] object-cover" 
                             alt="{{ $product->productName }}">
                         
-                        <h2 class="mt-3 text-[20px] font-semibold">{{ $product->productName }}</h2>
+                        <h2 class="mt-3 text-[20px] font-semibold w-[200px] text-center truncate">{{ $product->productName }}</h2>
 
                         <form action="{{ route('cart.add') }}" method="POST">
                             @csrf
