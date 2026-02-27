@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MenuController;
@@ -109,5 +110,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Admin feedback view
     Route::get('/adminFeedback', [AdminFeedbackController::class, 'index'])
         ->name('adminFeedback.index');
+
+    // Admin activity logs
+    Route::get('/adminActivityLogs', [ActivityLogController::class, 'index'])
+    ->name('adminActivityLogs.index');
 
 });

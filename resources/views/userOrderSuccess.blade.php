@@ -18,28 +18,49 @@
         </div>
 
         {{-- Order Table --}}
-        <div class="w-full rounded-lg p-4 mb-6">
-            <table class="w-full border-collapse">
-                <thead>
-                    <tr class="bg-red-200">
-                        <th class="p-4 border-b border-red-600"></th>
-                        <th class="p-4 border-b border-red-600 text-center">Name</th>
-                        <th class="p-4 border-b border-red-600 text-center">SubTotal</th>
+        <div class="w-full bg-white rounded-xl shadow-md overflow-hidden mb-6">
+
+            <table class="w-full text-sm">
+
+                {{-- Header --}}
+                <thead class="bg-[#F7D7D7] text-gray-800">
+                    <tr>
+                        <th class="p-4 text-left">Product</th>
+                        <th class="p-4 text-center">Quantity</th>
+                        <th class="p-4 text-right">Subtotal</th>
                     </tr>
                 </thead>
-                <tbody>
+
+                {{-- Body --}}
+                <tbody class="divide-y">
+
                     @forelse ($orderItems as $item)
-                        <tr class="border-b border-red-600">
-                            <td class="p-4 text-center">
-                                <img src="{{ asset($item['productImage']) }}" alt="picture" class="w-20 h-20 mx-auto">
+                        <tr class="hover:bg-gray-50 transition">
+
+                            {{-- Product (Image + Name) --}}
+                            <td class="p-4">
+                                <div class="flex items-center gap-4">
+                                    <img src="{{ asset($item['productImage']) }}"
+                                        alt="product"
+                                        class="w-16 h-16 rounded-lg object-cover border">
+
+                                    <div class="font-medium text-gray-800">
+                                        {{ $item['productName'] }}
+                                    </div>
+                                </div>
                             </td>
-                            <td class="p-4 text-center">
-                                {{ $item['productName'] }} x {{ $item['quantity'] }}
+
+                            {{-- Quantity --}}
+                            <td class="p-4 text-center font-medium">
+                                x {{ $item['quantity'] }}
                             </td>
-                            <td class="p-4 text-center">
+
+                            {{-- Subtotal --}}
+                            <td class="p-4 text-right font-semibold text-gray-900">
                                 ₱{{ number_format($item['subTotal'], 2) }}
                             </td>
                         </tr>
+
                     @empty
                         <tr>
                             <td colspan="3" class="p-6 text-center italic text-gray-500">
@@ -48,14 +69,18 @@
                         </tr>
                     @endforelse
 
+                    {{-- Total Row --}}
                     @if(!empty($orderItems))
-                        <tr class="font-bold">
-                            <td colspan="2" class="p-4 text-right">Total:</td>
-                            <td class="p-4 text-center">
+                        <tr class="bg-gray-50 font-bold text-lg">
+                            <td colspan="2" class="p-4 text-right">
+                                Total:
+                            </td>
+                            <td class="p-4 text-right text-[#CE5959]">
                                 ₱{{ number_format($totalCost, 2) }}
                             </td>
                         </tr>
                     @endif
+
                 </tbody>
             </table>
         </div>

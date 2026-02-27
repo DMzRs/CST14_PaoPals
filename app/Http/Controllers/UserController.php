@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityLogger; // ⭐ ADD THIS
 
 class UserController extends Controller
 {
@@ -16,7 +17,7 @@ class UserController extends Controller
         return view('userLogin');
     }
 
-    // HANDLE LOGIN
+    // HANDLE LOGIN (Step 1 — Password check)
     public function login(Request $request)
     {
         $request->validate([
@@ -26,8 +27,19 @@ class UserController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        // Check credentials WITHOUT logging in
         if (!$user || !Hash::check($request->password, $user->password)) {
+
+            ActivityLogger::log(
+                'Login Failed',
+                'Invalid credentials attempt for email: ' . $request->email
+            );
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Invalid email or password'
+                ], 401);
+            }
+
             return back()->withErrors(['email' => 'Invalid credentials.']);
         }
 
@@ -39,20 +51,24 @@ class UserController extends Controller
             'otp_expires_at' => now()->addMinutes(5),
         ]);
 
-        // Send email
         Mail::raw("Your PaoPals OTP code is: $otp (valid for 5 minutes)", function ($msg) use ($user) {
             $msg->to($user->email)
                 ->subject('Your Login OTP Code');
         });
 
-        // Store user ID ONLY (not logged in yet)
         session(['2fa_user_id' => $user->id]);
+
+        ActivityLogger::log(
+            'OTP Sent',
+            'OTP sent to user: ' . $user->email
+        );
 
         return response()->json([
             'success' => true
         ]);
     }
 
+    // VERIFY OTP (Step 2 — Actual Login)
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -66,10 +82,22 @@ class UserController extends Controller
         }
 
         if ($user->otp !== $request->otp) {
+
+            ActivityLogger::log(
+                'OTP Failed',
+                'Invalid OTP attempt for user: ' . $user->email
+            );
+
             return response()->json(['error' => 'Invalid OTP'], 422);
         }
 
         if (now()->greaterThan($user->otp_expires_at)) {
+
+            ActivityLogger::log(
+                'OTP Expired',
+                'Expired OTP used by user: ' . $user->email
+            );
+
             return response()->json(['error' => 'OTP expired'], 422);
         }
 
@@ -79,10 +107,14 @@ class UserController extends Controller
             'otp_expires_at' => null,
         ]);
 
-        // NOW log the user in
+        // LOGIN USER
         Auth::login($user);
-
         session()->forget('2fa_user_id');
+
+        ActivityLogger::log(
+            'User Login',
+            'User logged in successfully: ' . $user->email
+        );
 
         return response()->json([
             'redirect' => $user->is_admin ? '/adminDashboard' : '/'
@@ -110,25 +142,36 @@ class UserController extends Controller
                 ->subject('New OTP Code');
         });
 
+        ActivityLogger::log(
+            'OTP Resent',
+            'OTP resent to user: ' . $user->email
+        );
+
         return response()->json(['success' => true]);
     }
 
     // LOGOUT
     public function logout(Request $request)
     {
+        ActivityLogger::log(
+            'User Logout',
+            'User logged out'
+        );
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 
-     // show registration form
+    // SHOW REGISTRATION FORM
     public function showRegistrationForm()
     {
         return view('userRegister');
     }
 
-    // handle user registration
+    // REGISTER USER
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -141,19 +184,23 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['is_admin'] = false; // default to normal user
+        $validated['is_admin'] = false;
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        ActivityLogger::log(
+            'User Registered',
+            'New user registered: ' . $user->email
+        );
 
         return redirect('/login');
     }
 
-    // show user profile
+    // SHOW PROFILE
     public function showProfile()
     {
         $user = Auth::user();
 
-        // block admins from accessing user pages
         if (!$user || $user->is_admin) {
             abort(403);
         }
@@ -161,12 +208,11 @@ class UserController extends Controller
         return view('userProfilePage', compact('user'));
     }
 
-    // update user profile
+    // UPDATE PROFILE
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
 
-        // block admins from updating user profile
         if (!$user || $user->is_admin) {
             abort(403);
         }
@@ -188,6 +234,12 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
+        ActivityLogger::log(
+            'Profile Updated',
+            'User updated profile: ' . $user->email
+        );
+
+        return redirect()->route('profile')
+            ->with('success', 'Profile updated successfully.');
     }
 }

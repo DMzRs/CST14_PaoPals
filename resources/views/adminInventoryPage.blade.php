@@ -12,10 +12,11 @@
 
             <!-- Sidebar Tabs -->
             <div class="flex flex-col justify-center items-center w-72 self-start">
-                <a href="/adminDashboard" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black">Dashboard</a>
-                <a href="{{ route('adminProduct.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black">Products</a>
-                <a href="/adminInventory" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black bg-[#F1B9B2]">Inventory</a>
-                <a href="{{ route('adminFeedback.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black">Feedbacks</a>
+                <a href="/adminDashboard" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black dashboard">Dashboard</a>
+                <a href="{{ route('adminProduct.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black products">Products</a>
+                <a href="/adminInventory" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black inventory bg-[#F1B9B2]">Inventory</a>
+                <a href="{{ route('adminFeedback.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black feedback">Feedbacks</a>
+                <a href="{{ route('adminActivityLogs.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black logs">Activity Logs</a>
             </div>
 
             <!-- Inventory Container -->

@@ -29,7 +29,7 @@ class AdminDashboardController extends Controller
         $orderCount = Order::count();
 
         // Total number of customers
-        $customerCount = User::count();
+        $customerCount = User::where('is_admin', 0)->count();
 
         // Most popular products (by quantity sold)
         $popularItems = OrderItem::select('productId', DB::raw('SUM(quantity) as total_sold'))

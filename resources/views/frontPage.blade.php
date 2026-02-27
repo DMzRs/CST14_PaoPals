@@ -51,11 +51,29 @@
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                            <button type="submit"
-                                class="mt-3 px-4 py-1 bg-[#CE5959] text-white text-[12px] font-bold rounded-full hover:bg-[#ff5858]"
-                                {{ $currentQty >= $availableStock ? 'disabled opacity-50 cursor-not-allowed' : '' }}>
-                                ORDER NOW
-                            </button>
+                            @if($availableStock <= 0)
+                                <button
+                                    type="button"
+                                    disabled
+                                    class="mt-2.5 px-3 py-1 bg-gray-400 rounded-full text-xs font-bold text-white cursor-not-allowed">
+                                    NO STOCK
+                                </button>
+
+                            @elseif($currentQty >= $availableStock)
+                                <button
+                                    type="button"
+                                    disabled
+                                    class="mt-2.5 px-3 py-1 bg-gray-400 rounded-full text-xs font-bold text-white cursor-not-allowed">
+                                    MAX REACHED
+                                </button>
+
+                            @else
+                                <button
+                                    type="submit"
+                                    class="mt-2.5 px-3 py-1 bg-[#CE5959] rounded-full text-xs font-bold text-white hover:bg-[#ff5858] transition">
+                                    ORDER NOW
+                                </button>
+                            @endif
                         </form>
                     </div>
                 @endforeach

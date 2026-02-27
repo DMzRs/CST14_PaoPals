@@ -39,24 +39,23 @@
        <div class="w-[700px] bg-[#FEFAF8] border border-black rounded-2xl px-8 pt-6 pb-6 mt-5">
             <form method="POST" action="{{ route('login') }}" class="flex flex-col items-center" novalidate>
                 @csrf
-
                 <!-- Email -->
                 <label class="self-start ml-[110px] mt-5 text-[20px] font-medium">Email</label>
-                <input type="email" name="email" value="{{ old('email') }}"
+                <input type="email" id="email" name="email" autocomplete="none" value="{{ old('email') }}"
                     class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[length:24px_24px] bg-[position:7px_center]"
                     style="background-image: url('{{ asset('images/icons/email_icon.png') }}');">
-                @error('email')
-                    <p class="self-start ml-32 mt-1 text-red-600 text-sm">{{ $message }}</p>
-                @enderror
+                <p id="emailError"
+                    class="hidden w-[400px] text-sm px-3 py-2 text-red-700">
+                </p>
 
                 <!-- Password -->
                 <label class="self-start ml-[110px] mt-5 text-[20px] font-medium">Password</label>
                 <input type="password" id="password" name="password"
                     class="w-[400px] border border-black rounded-md py-2 pl-10 bg-no-repeat bg-[position:11px_center]" 
                     style="background-image: url('{{ asset('images/icons/password_icon.png') }}');">
-                @error('password')
-                    <p class="self-start ml-32 mt-1 text-red-600 text-sm">{{ $message }}</p>
-                @enderror
+                <p id="passwordError"
+                    class="hidden w-[400px] text-sm px-3 py-2 text-red-700">
+                </p>
 
                 <!-- Show Password Checkbox -->
                 <div class="flex justify-between items-center w-[410px] ml-5 mt-4">
@@ -64,6 +63,10 @@
                         <input type="checkbox" id="showPassword">
                         <label for="showPassword" class="text-xs">Show Password</label>
                     </div>
+                </div>
+
+                <div id="loginError"
+                    class="hidden w-[400px] px-3 py-2 text-red-700 text-center border border-red-700 rounded mt-4">
                 </div>
 
                 <!-- Password visibility -->
@@ -138,11 +141,27 @@
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        // Get elements
+        const loginError = document.getElementById('loginError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Reset all errors
+        loginError.classList.add('hidden');
+        emailError.classList.add('hidden');
+        passwordError.classList.add('hidden');
+
+        emailInput.classList.remove('border-red-500');
+        passwordInput.classList.remove('border-red-500');
+
         const formData = new FormData(loginForm);
 
         const response = await fetch("{{ route('login') }}", {
             method: "POST",
-            credentials: "same-origin", // REQUIRED
+            credentials: "same-origin",
             headers: {
                 "X-CSRF-TOKEN": csrfToken,
                 "Accept": "application/json"
@@ -152,10 +171,35 @@
 
         const data = await response.json();
 
+        // ✅ Validation errors (422)
+        if (response.status === 422) {
+            const errors = data.errors;
+
+            if (errors.email) {
+                emailError.textContent = errors.email[0];
+                emailError.classList.remove('hidden');
+                emailInput.classList.add('border-red-500');
+            }
+
+            if (errors.password) {
+                passwordError.textContent = errors.password[0];
+                passwordError.classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+            }
+
+            return;
+        }
+
+        // Wrong credentials (401)
+        if (response.status === 401) {
+            loginError.textContent = data.error;
+            loginError.classList.remove('hidden');
+            return;
+        }
+
+        // Success → show OTP modal
         if (data.success) {
             document.getElementById('otpModal').classList.remove('hidden');
-        } else if (data.error) {
-            alert(data.error);
         }
     });
 

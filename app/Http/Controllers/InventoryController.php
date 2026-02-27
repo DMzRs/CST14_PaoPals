@@ -6,20 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\StockIn;
 use App\Models\StockOut;
+use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryController extends Controller
 {
     // Show inventory page (Stock In + Stock Out)
     public function index()
     {
-        // Fetch all stock-in entries with related products
         $stockIns = StockIn::with('product')->get();
-
-        // Fetch all stock-out entries with related stockin and product
         $stockOuts = StockOut::with('stockin.product')->get();
-
-        // Fetch all products for Add Stock dropdown
         $products = Product::all();
+
+        // ✅ Log viewing inventory
+        ActivityLogger::log(
+            'View Inventory',
+            'Admin viewed inventory page'
+        );
 
         return view('adminInventoryPage', compact('stockIns', 'stockOuts', 'products'));
     }
@@ -27,14 +30,14 @@ class InventoryController extends Controller
     // Add stock for existing product
     public function storeStock(Request $request)
     {
-       $validated = $request->validate([
-            'productId' => 'required|exists:product,id', 
+        $validated = $request->validate([
+            'productId' => 'required|exists:product,id',
             'quantity' => 'required|integer|min:1',
             'dateCreated' => 'required|date',
             'expirationDate' => 'required|date|after_or_equal:dateCreated',
         ]);
 
-        StockIn::create([
+        $stock = StockIn::create([
             'productId' => $validated['productId'],
             'quantity' => $validated['quantity'],
             'remainingStock' => $validated['quantity'],
@@ -43,6 +46,14 @@ class InventoryController extends Controller
             'status' => 0,
         ]);
 
+        // Get product name for log
+        $product = Product::find($validated['productId']);
+
+        // ✅ Log stock addition
+        ActivityLogger::log(
+            'Stock Added',
+            'Added ' . $validated['quantity'] . ' stock for product: ' . ($product->productName ?? 'Unknown')
+        );
 
         return redirect()->back()->with('success', 'Stock added successfully.');
     }
@@ -84,7 +95,7 @@ class InventoryController extends Controller
             'productImage' => $validated['productImage'],
         ]);
 
-        // Create initial stock entry for this product
+        // Create initial stock entry
         StockIn::create([
             'productId' => $product->id,
             'quantity' => $validated['quantity'],
@@ -93,6 +104,14 @@ class InventoryController extends Controller
             'expirationDate' => $validated['expirationDate'],
             'status' => 0,
         ]);
+
+        // ✅ Log product creation
+        ActivityLogger::log(
+            'Product Created',
+            'Added new product: ' . $product->productName .
+            ' (Category: ' . $product->productCategory .
+            ', Initial Stock: ' . $validated['quantity'] . ')'
+        );
 
         return redirect()->back()->with('success', 'Product and initial stock added successfully.');
     }

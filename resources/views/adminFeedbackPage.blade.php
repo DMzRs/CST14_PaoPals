@@ -20,7 +20,8 @@
                 <a href="/adminDashboard" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black dashboard">Dashboard</a>
                 <a href="{{ route('adminProduct.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black products">Products</a>
                 <a href="/adminInventory" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black inventory">Inventory</a>
-                <a href="{{ route('adminFeedback.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black feedback bg-[#F1B9B2]">Feedbacks</a>
+                <a href="{{ route('adminFeedback.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black feedback bg-[#F1B9B2]  ">Feedbacks</a>
+                <a href="{{ route('adminActivityLogs.index') }}" class="block w-[200px] pl-7 py-2 text-black text-xl font-semibold border-b border-black logs">Activity Logs</a>
             </div>
 
             <!-- Feedback Container -->
@@ -30,21 +31,33 @@
                 <h1 class="self-start ml-5 mt-5 text-4xl text-[#CE5959] border-b border-gray-400 w-[1380px] font-bold">Feedback</h1>
 
                 <!-- Feedback Messages Box -->
-                <div class="flex flex-col items-center justify-center mt-5 mb-5 p-5 w-[1200px] border border-gray-400 rounded bg-white">
-                    <div class="w-full max-w-[1100px]">
+                <div class="flex flex-col items-center justify-center mt-5 mb-5 p-4 w-[1200px]">
+                    <div class="w-full max-w-[1100px] space-y-3">
 
                         @forelse($feedbacks as $fb)
-                            <div class="border border-[#CE5959] rounded p-4 mb-3 max-h-40 overflow-y-auto break-words">
-                                <div class="flex justify-between text-[#CE5959] font-bold text-sm mb-2">
-                                    <strong>From: {{ $fb->user ? $fb->user->firstName . ' ' . $fb->user->lastName : 'Guest' }}</strong>
-                                    <span>{{ \Carbon\Carbon::parse($fb->createdAt)->format('d/m/Y') }}</span>
-                                </div>
-                                <p class="text-[#CE5959] text-justify">
-                                    {{ $fb->message }}
-                                </p>
+                            <div class="border border-[#CE5959] rounded-lg p-3 bg-[#FFF8F8] shadow-sm max-h-36 overflow-y-auto">
+
+                            <!-- Header -->
+                            <div class="flex justify-between items-center text-[#CE5959] font-semibold text-xs mb-1">
+                                <span class="truncate">
+                                    From: {{ $fb->user ? $fb->user->firstName . ' ' . $fb->user->lastName : 'Guest' }}
+                                </span>
+
+                                <span class="text-[11px] whitespace-nowrap">
+                                    {{ \Carbon\Carbon::parse($fb->createdAt)->format('d/m/Y') }}
+                                </span>
                             </div>
+
+                            <!-- Message -->
+                            <p class="text-[#CE5959] text-sm leading-relaxed break-words">
+                                {{ $fb->message }}
+                            </p>
+
+                        </div>
                         @empty
-                            <p class="text-[#CE5959] text-center">No feedback messages yet.</p>
+                            <p class="text-[#CE5959] text-center text-sm py-4">
+                                No feedback messages yet.
+                            </p>
                         @endforelse
 
                     </div>

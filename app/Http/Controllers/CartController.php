@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Sales;
 use App\Models\StockIn;
 use App\Models\StockOut;
+use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -41,6 +42,13 @@ class CartController extends Controller
             'maxStock' => $availableStock,
         ];
 
+        ActivityLogger::log(
+            'Add to Cart',
+            'Added product to cart: ' . $product->productName,
+            'Cart',
+            $product->id
+        );
+
         session()->put('cart', $cart);
 
         return redirect()->route('cart.index');
@@ -67,14 +75,13 @@ class CartController extends Controller
         return view('userCartPage', compact('cart'));
     }
 
-
-    // Increase quantity in cart
-    public function increase($id)
+    // AJAX: Increase quantity
+    public function increase(Request $request, $id)
     {
         $cart = session()->get('cart', []);
 
         if (!isset($cart[$id])) {
-            return redirect()->route('cart.index');
+            return response()->json(['error' => 'Item not found'], 404);
         }
 
         $product = Product::findOrFail($id);
@@ -82,43 +89,93 @@ class CartController extends Controller
         $currentQty = $cart[$id]['quantity'];
 
         if ($currentQty >= $availableStock) {
-            return redirect()->route('cart.index')->with('stock_error', true);
+            return response()->json([
+                'error' => 'Not enough stock available.'
+            ], 400);
         }
 
         $cart[$id]['quantity']++;
-        $cart[$id]['maxStock'] = $availableStock;
         session()->put('cart', $cart);
 
-        return redirect()->route('cart.index'); // always redirect to cart
+        ActivityLogger::log(
+            'Update Cart',
+            'Increased quantity for product ID: ' . $id,
+            'Cart',
+            $id
+        );
+
+        return response()->json([
+            'quantity' => $cart[$id]['quantity'],
+            'itemTotal' => $cart[$id]['price'] * $cart[$id]['quantity'],
+            'cartTotal' => $this->calculateCartTotal($cart)
+        ]);
     }
 
-    public function decrease($id)
+    // AJAX: Decrease quantity
+    public function decrease(Request $request, $id)
     {
-        $cart = session()->get('cart');
+        $cart = session()->get('cart', []);
 
-        if(isset($cart[$id])) {
-            if($cart[$id]['quantity'] > 1) {
-                $cart[$id]['quantity']--;
-            } else {
-                unset($cart[$id]);
-            }
-
-            session()->put('cart', $cart);
+        if (!isset($cart[$id])) {
+            return response()->json(['error' => 'Item not found'], 404);
         }
 
-        return redirect()->back();
+        if ($cart[$id]['quantity'] > 1) {
+            $cart[$id]['quantity']--;
+        } else {
+            unset($cart[$id]);
+        }
+
+        session()->put('cart', $cart);
+
+        ActivityLogger::log(
+            'Update Cart',
+            'Decreased quantity for product ID: ' . $id,
+            'Cart',
+            $id
+        );
+
+        return response()->json([
+            'quantity' => $cart[$id]['quantity'] ?? 0,
+            'itemTotal' => isset($cart[$id]) 
+                ? $cart[$id]['price'] * $cart[$id]['quantity'] 
+                : 0,
+            'cartTotal' => $this->calculateCartTotal($cart),
+            'removed' => !isset($cart[$id])
+        ]);
     }
 
-    public function remove($id)
+    // AJAX: Remove item
+    public function remove(Request $request, $id)
     {
-        $cart = session()->get('cart');
+        $cart = session()->get('cart', []);
 
-        if(isset($cart[$id])) {
+        if (isset($cart[$id])) {
             unset($cart[$id]);
             session()->put('cart', $cart);
+
+            ActivityLogger::log(
+                'Remove from Cart',
+                'Removed product from cart. Product ID: ' . $id,
+                'Cart',
+                $id
+            );
         }
 
-        return redirect()->back();
+        return response()->json([
+            'cartTotal' => $this->calculateCartTotal($cart)
+        ]);
+    }
+
+    private function calculateCartTotal($cart)
+    {
+        $total = 0;
+
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return $total;
     }
 
     public function processCheckout(Request $request)
@@ -220,6 +277,11 @@ class CartController extends Controller
 
         session()->forget('cart');
 
+        ActivityLogger::log(
+            'Checkout',
+            'Completed checkout with total cost: ' . $totalCost,
+            'Orders'
+        );
         return redirect()->route('checkout.orderSuccess');
     }
 
