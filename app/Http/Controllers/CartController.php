@@ -228,6 +228,7 @@ class CartController extends Controller
                 //3. Deduct Stock (FIFO)
                 $stocks = StockIn::where('productId', $item['productId'])
                     ->where('remainingStock', '>', 0)
+                    ->where('status', '!=', 'Expired')
                     ->orderBy('expirationDate')
                     ->get();
 
