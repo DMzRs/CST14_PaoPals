@@ -66,4 +66,5 @@ Run npm install
 Run cp .env.example .env
 Run php artisan key:generate
 
-
+# Run this command every open
+ pa stocks:check-expired
