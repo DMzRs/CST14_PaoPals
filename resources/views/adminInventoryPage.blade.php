@@ -125,4 +125,21 @@
             window.addEventListener('click', e => { if(e.target === modal) modal.classList.add('hidden'); });
         });
     </script>
+
+    <!-- Prevent double clicking -->
+    <script>
+    function disableStockBtn(form) {
+        const btn = form.querySelector('#addStockBtn');
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+    }
+    </script>
+    <script>
+    function disableProductBtn(form) {
+        const btn = form.querySelector('.submit-product-btn');
+
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+    }
+    </script>
 </x-adminNavBar>

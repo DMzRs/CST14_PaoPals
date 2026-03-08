@@ -9,7 +9,7 @@
 
         <h2 class="text-2xl font-bold mb-4 text-[#CE5959]">Add New Product & Stock</h2>
 
-        <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" onsubmit="disableProductBtn(this)">
             @csrf
 
             <div class="mb-3">
@@ -43,7 +43,13 @@
 
             <div class="mb-3">
                 <label class="block mb-1">Date Arrived:</label>
-                <input type="date" name="dateCreated" class="w-full border p-2 rounded" required>
+                <input 
+                    type="date" 
+                    name="dateCreated" 
+                    class="w-full border p-2 rounded" 
+                    value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" 
+                    required
+                >
             </div>
 
             <div class="mb-3">
@@ -51,7 +57,7 @@
                 <input type="date" name="expirationDate" class="w-full border p-2 rounded" required>
             </div>
 
-            <button type="submit" class="bg-[#CE5959] text-white px-4 py-2 rounded hover:bg-[#ff5858]">
+            <button type="submit" class="submit-product-btn bg-[#CE5959] text-white px-4 py-2 rounded hover:bg-[#ff5858]">
                 Add Product & Stock
             </button>
         </form>
