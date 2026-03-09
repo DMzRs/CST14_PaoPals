@@ -82,7 +82,7 @@
                 </script>
 
                 <!-- Sign In Button -->
-                <button type="submit"
+                <button id="loginBtn" type="submit"
                         class="h-[45px] bg-[#CE5959] hover:bg-[#ff5858] text-white font-medium text-base px-10 py-2 rounded-full transition mb-0 mt-3">
                     Sign In
                 </button>
@@ -134,14 +134,18 @@
     <!-- FOOTER -->
     <script>
     const loginForm = document.querySelector('form');
-
-    // CSRF token from Blade
+    const loginBtn = document.getElementById('loginBtn');
+    
     const csrfToken = '{{ csrf_token() }}';
 
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Get elements
+        // Disable button while processing
+        loginBtn.disabled = true;
+        loginBtn.innerText = "Processing...";
+        loginBtn.classList.add("opacity-70", "cursor-not-allowed");
+
         const loginError = document.getElementById('loginError');
         const emailError = document.getElementById('emailError');
         const passwordError = document.getElementById('passwordError');
@@ -149,7 +153,6 @@
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
 
-        // Reset all errors
         loginError.classList.add('hidden');
         emailError.classList.add('hidden');
         passwordError.classList.add('hidden');
@@ -171,7 +174,13 @@
 
         const data = await response.json();
 
-        // ✅ Validation errors (422)
+        function resetButton() {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Sign In";
+        loginBtn.classList.remove("opacity-70", "cursor-not-allowed");
+        }
+
+        // Validation errors
         if (response.status === 422) {
             const errors = data.errors;
 
@@ -187,13 +196,16 @@
                 passwordInput.classList.add('border-red-500');
             }
 
+            resetButton();
             return;
         }
 
-        // Wrong credentials (401)
+        // Wrong credentials
         if (response.status === 401) {
             loginError.textContent = data.error;
             loginError.classList.remove('hidden');
+
+            resetButton();
             return;
         }
 
@@ -204,7 +216,7 @@
     });
 
 
-    // ✅ VERIFY OTP
+    // VERIFY OTP
     async function verifyOtp() {
         const otp = document.getElementById('otpInput').value;
 
@@ -229,7 +241,7 @@
     }
 
 
-    // ✅ RESEND OTP
+    // RESEND OTP
     async function resendOtp() {
         const response = await fetch("{{ route('resend.otp') }}", {
             method: "POST",
