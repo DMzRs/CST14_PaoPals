@@ -113,6 +113,54 @@
         :products="$products" 
     />
 
+    <!-- Feedback Modal -->
+    @if(session('success') || $errors->any())
+    <div id="feedbackModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-[400px] text-center relative">
+            
+            <button class="absolute top-2 right-3 text-xl close-feedback">&times;</button>
+
+            @if(session('success'))
+                <h2 class="text-2xl font-bold text-green-600 mb-3">Success</h2>
+                <p class="text-gray-700">{{ session('success') }}</p>
+            @endif
+
+            @if($errors->any())
+                <h2 class="text-2xl font-bold text-red-600 mb-3">Error</h2>
+                <ul class="text-gray-700 text-left list-none ml-5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            @endif
+
+            <button class="mt-5 px-5 py-2 bg-[#CE5959] text-white rounded close-feedback">
+                OK
+            </button>
+        </div>
+    </div>
+    @endif
+
+    <!-- Vanilla JS for Feedback Modal -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("feedbackModal");
+        if(modal){
+            document.querySelectorAll(".close-feedback").forEach(btn=>{
+                btn.addEventListener("click", ()=>{
+                    modal.style.display = "none";
+                });
+            });
+
+            window.addEventListener("click", function(e){
+                if(e.target === modal){
+                    modal.style.display = "none";
+                }
+            });
+        }
+    });
+    </script>
+
     <!-- Vanilla JS for Opening/Closing Modals -->
     <script>
         document.querySelectorAll('.open-modal-btn').forEach(btn => {

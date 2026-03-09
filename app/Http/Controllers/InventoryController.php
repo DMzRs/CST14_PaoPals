@@ -62,13 +62,15 @@ class InventoryController extends Controller
     public function storeProduct(Request $request)
     {
         $validated = $request->validate([
-            'productName' => 'required|string|max:255',
+            'productName' => 'required|string|max:255|unique:product,productName',
             'productCategory' => 'required|string|max:255',
             'productPrice' => 'required|numeric|min:0',
             'productImage' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'quantity' => 'required|integer|min:1',
             'dateCreated' => 'required|date',
             'expirationDate' => 'required|date|after_or_equal:dateCreated',
+        ], [
+            'productName.unique' => 'This product already exists in the system.'
         ]);
 
         // Determine folder based on category
@@ -105,7 +107,6 @@ class InventoryController extends Controller
             'status' => 0,
         ]);
 
-        // ✅ Log product creation
         ActivityLogger::log(
             'Product Created',
             'Added new product: ' . $product->productName .
